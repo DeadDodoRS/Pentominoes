@@ -44,7 +44,7 @@
   <ItemGroup>
     <Compile Include="Figure.cs" />
     <Compile Include="FigureNumerator.cs" />
-    <Compile Include="FileReader.cs" />
+    <Compile Include="FileWorker.cs" />
     <Compile Include="GameBoard.cs" />
     <Compile Include="PentaminoFigurePattern.cs" />
     <Compile Include="Program.cs" />

@@ -10,111 +10,84 @@ namespace Pentamino
 
     class FigureNumerator
     {
-        List<Figure> PentaminoList = new List<Figure>();
+        List<Figure> AllFigureSequence = new List<Figure>();
+
         //Указатель на каком символе остановились
-        public int numerator { get; private set; } = 0;
+        public int Numerator { get; private set; } = 0;
+        public int Count { get; private set; } = 0;
 
         public FigureNumerator()
         {
-            foreach (PentaminoSymbols s in Enum.GetValues(typeof(PentaminoSymbols)))
+            foreach (PentaminoSymbols symbol in Enum.GetValues(typeof(PentaminoSymbols)))
             {
-                PentaminoList.Add(new Figure(s));
+                AllFigureSequence.Add(new Figure(symbol));
+                Count += 1;
             }
         }
 
-
         public Figure GetCurrent()
         {
-            return PentaminoList[numerator];
+            return AllFigureSequence[Numerator];
         }
 
+        //Переход на разряд ниже (в сторону последнего)
         public void MoveNextDigit()
         {
-            numerator++;
+            Numerator++;
         }
 
+        //Переход на разряд выше (в сторону первого символа)
+        public void MoveBackDigit()
+        {
+            Numerator--;
+        }
+
+        //Возврат к предыдущему символу
+        public void MovePreviousDigit()
+        {
+            ReplaceCurrentWithLast();
+            MoveBackDigit();
+        }
+
+        //Увеличение на 1 текущего разряда
         public bool MoveNextThisDigit()
         {
-            for (int i = numerator; i < PentaminoList.Count; i++)
+            for (int i = Numerator; i < AllFigureSequence.Count; i++)
             {
-                if ((int)PentaminoList[i].Symbol > (int)PentaminoList[numerator].Symbol)
+                if ((int)AllFigureSequence[i].Symbol > (int)AllFigureSequence[Numerator].Symbol)
                 {
-                    var temp = PentaminoList[numerator];
+                    var temp = AllFigureSequence[Numerator];
 
-                    PentaminoList[numerator] = PentaminoList[i];
-                    PentaminoList[i] = temp;
-
+                    AllFigureSequence[Numerator] = AllFigureSequence[i];
+                    AllFigureSequence[i] = temp;
 
                     return true;
                 }
             }
 
-            //Если не удалось подставить
+            //Разряды закончились
             return false;
         }
 
-        public void MovePriviosDigit()
-        {
-            ReplaceCurrentWithLast();
-            MoveBack();
-        }
-
-        public void MoveBack()
-        {
-            numerator--;
-        }
-
-        public void ReplaceCurrentWithNext()
-        {
-            var temp = PentaminoList[numerator];
-
-            PentaminoList[numerator] = PentaminoList[numerator + 1];
-            PentaminoList[numerator + 1] = temp;
-        }
-
+        //Выставляем текущий разряд в конец
         public void ReplaceCurrentWithLast()
         {
-            for (int i = numerator; i < PentaminoList.Count - 1; i++)
+            for (int i = Numerator; i < AllFigureSequence.Count - 1; i++)
             {
-                var temp = PentaminoList[i];
+                var temp = AllFigureSequence[i];
 
-                PentaminoList[i] = PentaminoList[i + 1];
-                PentaminoList[i + 1] = temp;
+                AllFigureSequence[i] = AllFigureSequence[i + 1];
+                AllFigureSequence[i + 1] = temp;
             }
-
         }
-
-        //public void SetCurrent(Figure value)
-        //{
-        //    PentaminoList[numerator] = value;
-        //}
-
-        //public void RotateCurrent()
-        //{
-        //    PentaminoList[numerator].Rotate();
-        //}
-
-        //public Figure this[int i]
-        //{
-        //    get
-        //    {
-        //        return PentaminoList[numerator];
-        //    }
-
-        //    private set
-        //    {
-        //        PentaminoList[i] = value;
-        //    }
-        //}
-
 
         public override string ToString()
         {
             StringBuilder anw = new StringBuilder();
 
-            foreach (Figure s in PentaminoList)
+            foreach (Figure figure in AllFigureSequence)
             {
-                anw.Append((s.Symbol));
+                anw.Append((figure.Symbol));
             }
 
             return anw.ToString();

@@ -10,19 +10,36 @@ namespace Pentamino
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Введите имя файла для загрузки игрового поля :");
-            string pathFrom = Console.ReadLine();
-            Console.WriteLine("Введите имя файла для сохранения результата :");
-            string pathTo = Console.ReadLine();
+            //Console.WriteLine("Введите имя файла для загрузки игрового поля :");
+            //string pathFrom = Console.ReadLine();
+            //Console.WriteLine("Введите имя файла для сохранения результата :");
+            //string pathTo = Console.ReadLine();
 
-            FileReader fr = new FileReader();
-            GameBoard gm = new GameBoard(pathFrom);
+            GameBoard gm = new GameBoard("C:/Junior/10.in");
 
+            gm.Insert(new Figure(PentaminoSymbols.X));
+            gm.Insert(new Figure(PentaminoSymbols.W));
+            gm.Insert(new Figure(PentaminoSymbols.I));
+            gm.Insert(new Figure(PentaminoSymbols.T));
 
-            gm.CompliteBoard();
-            fr.WriteFile(pathTo, gm);
+            while (true)
+            {
+                Console.WriteLine("Игровое поле: ");
+                Console.WriteLine(gm.ToString());
 
-            Console.WriteLine("Запись в файл завершена");
+                if (Console.ReadLine() == "k")
+                {
+                    gm.ReinsertCurrentFigure();                    
+                }
+
+                Console.ReadKey();
+            }
+
+            //gm.CompliteBoard();
+
+            //FileWorker fr = new FileWorker();
+            //fr.WriteFile(pathTo, gm);
+            //Console.WriteLine("Запись в файл завершена");
 
             Console.WriteLine("Игровое поле: ");
             Console.WriteLine(gm.ToString());

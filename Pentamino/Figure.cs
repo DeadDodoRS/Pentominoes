@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace Pentamino
 {
-    //public enum PentaminoSymbols { F, I, L, N, P, T, U, V, W, X, Y, Z };
-
     class Figure
     {
         //Представление символа в виде массива
@@ -20,9 +18,9 @@ namespace Pentamino
 
         public Figure(PentaminoSymbols symbol)
         {
-            this.Symbol = symbol;
+            Symbol = symbol;
             //Задаем массив
-            this.SymbolArray = PentaminoFigurePattern.GetArrayBySymbol(symbol);
+            SymbolArray = PentaminoFigurePattern.GetArrayBySymbol(symbol);
         }
 
         //При установке на поле
@@ -58,6 +56,11 @@ namespace Pentamino
         //Отзеркалить фигуру
         public void Mirror()
         {
+            //Вводим исключения для незекральных фигур
+            if (Symbol == PentaminoSymbols.X || Symbol == PentaminoSymbols.I || Symbol == PentaminoSymbols.T ||
+                Symbol == PentaminoSymbols.V || Symbol == PentaminoSymbols.U || Symbol == PentaminoSymbols.W)
+                return;
+
             for (int j = 0; j < SymbolArray.GetLength(1) / 2; j++)
             {
                 for (int i = 0; i < SymbolArray.GetLength(0); i++)
@@ -69,22 +72,20 @@ namespace Pentamino
             }
         }
 
-        //Координаты непустой ячейки в массиве фигуры
-
+        //Координаты непустой ячейки в первом столбце
         //Координата по которой будем делать проверку вставки в поле
-        public int GetFirstCell()
+        public int GetIndent()
         {
             //Тк в первая столбец не может быть пустым => цикл один
             for (int i = 0; i < SymbolArray.GetLength(0); i++)
             {
                 if (SymbolArray[i, 0])
                 {
-                    int k = i;
                     return i;
                 }
             }
 
-            //Поиск должен дать результат, эта строка не выполнится
+            //Поиск должен дать результат, строка не выполнится
             return 0;
         }
 
@@ -117,12 +118,11 @@ namespace Pentamino
             }
 
             //Обратное преобразование
-            string anw = sb.ToString();
-            return anw;
+            return sb.ToString();
         }
 
         //Проверка является ли данный символ символом из Пентамино
-        private bool isPentaminoSymbol(char symbol)
+        private static bool isPentaminoSymbol(char symbol)
         {
             string symb = symbol.ToString();
 
@@ -137,12 +137,12 @@ namespace Pentamino
             return false;
         }
 
+        //Возвращаем размерность массива
         public int GetLength(int side)
         {
             if (side == 0)
-            {
                 return SymbolArray.GetLength(0);
-            }
+
 
             return SymbolArray.GetLength(1);
         }

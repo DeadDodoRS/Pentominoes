@@ -1,112 +1,106 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Pentamino
 {
-    public enum Colors { WHITE = 0, BLACK, COLORFUL }
+    public enum CellStates { NONE, NONINSERT}
 
     class GameBoard
     {
-        public Stack<Figure> listFigureOnBoard = new Stack<Figure>();
-        public StringBuilder AnswerString;
+        public Stack<Figure> FiguresOnBoard = new Stack<Figure>();
+        public StringBuilder AnswerString = new StringBuilder();
 
         private int[,] gameBoard;
         private const int CountRotate = 4;
 
-        FigureNumerator figureNumerator;
+        FigureNumerator figureNumerator = new FigureNumerator();
 
         public GameBoard(string filePath)
         {
-            figureNumerator = new FigureNumerator();
-            AnswerString = new StringBuilder();
-
             ReadGameBoard(filePath);
-
-            Console.WriteLine(figureNumerator);
         }
-
 
         public void Insert(Figure figure)
         {
-            int i, j;
             //Поиск координат для вставки
-            FindEmptyCell(out i, out j);
+            FindEmptyCell(out int i, out int j);
 
-            TryInsertRandomRotate(figure, i, j);
+            if (CheckCanInsertAllRotate(figure, i, j)){
+
+                InsertByCord(i, j, figure);
+            }
         }
 
         public void CompliteBoard()
         {
-            while (AnswerString.Length <= 11)
+            //Пока строка-ответ не будет содержать все символы
+            while (AnswerString.Length < figureNumerator.Count)
             {
                 //Находим координаты поля
-                int i, j;
-                FindEmptyCell(out i, out j);
+                FindEmptyCell(out int i, out int j);
 
                 //Поиск фигуры для подстановки
                 TryInsertRandomFigure(i, j);
             }
 
-            Console.WriteLine();
-            Console.WriteLine("Готово");
-
+            Console.WriteLine("Подстановка завершена");
         }
 
         public void TryInsertRandomFigure(int i, int j)
         {
-
-            if (TryInsertRandomRotate(figureNumerator.GetCurrent(), i, j))
+            //Если текущий символ подходит, то устанавливаем на поле и записываем
+            if (CheckCanInsertAllRotate(figureNumerator.GetCurrent(), i, j))
             {
                 //Запись
                 InsertByCord(i, j, figureNumerator.GetCurrent());
-
-                AnswerString.Append(figureNumerator.GetCurrent().Symbol);
-                Console.WriteLine(AnswerString);
-
                 figureNumerator.MoveNextDigit();
             }
             else
             {
+                //Если символ не подошел, переходим к следующему 
                 while (figureNumerator.MoveNextThisDigit() == false)
                 {
-                    ////Второй шанс фигуры
-                    //figureNumerator.SetCurrent(listFigureOnBoard.Peek());
-                    //figureNumerator.RotateCurrent();
+                    //Если перейти к следующему не получится (тк закончились), 
+                    //переходим к предыдущему символу, удаляем, подставляем новую фигуру 
 
-                    figureNumerator.MovePriviosDigit();
+                    if (false)
+                    {
+                        //Код для попытки поворота уже вставленной фигуры
+                        Figure figure = FiguresOnBoard.Peek();
+                        figure.Rotate();
+
+                        RemoveLastFigure();
+
+                        if (CheckCanInsertAllRotate(figure, i, j)){
+                            //TODO
+                        }
+
+                    }
+
+
+                    figureNumerator.MovePreviousDigit();
                     RemoveLastFigure();
 
-                    //if (TryInsertRandomRotate(figureNumerator.GetCurrent(), i, j))
-                    //{
-
-                    //    Console.WriteLine("Второй шанс");
-                    //    InsertByCord(i, j, figureNumerator.GetCurrent());
-                    //} else
-
-                    //{
-
-                        Console.WriteLine("удалить");
-                        //figureNumerator.MovePriviosDigit();
-
-                        //RemoveLastFigure();
-                        AnswerString.Length--;
-                    //}
-
+                    Console.WriteLine("Удаление");
                 }
             }
+        }
 
-            return;
+        //Пытаемся вставить текущую фигуру другой стороной
+        public void ReinsertCurrentFigure()
+        {
+            Figure figure = FiguresOnBoard.Peek();
+            RemoveLastFigure();
+            figure.Rotate();
 
+            Insert(figure);
         }
 
 
         //Проверка всех комбинаций фигуры с поворотами и отзеркаливанием
-        public bool TryInsertRandomRotate(Figure figure, int i, int j)
+        public bool CheckCanInsertAllRotate(Figure figure, int i, int j)
         {
-
             for (int n = 0; n < CountRotate * 2; n++)
             {
                 //Как пройдет половина поворотов - зеркалим и проходим цикл ещё раз
@@ -116,7 +110,7 @@ namespace Pentamino
                     figure.Mirror();
                 }
 
-                if (TryInsert(i, j, figure))
+                if (CheckCanInsert(i, j, figure))
                 {
                     //Если вставка прошла успешно - выходим из метода
                     return true;
@@ -124,42 +118,30 @@ namespace Pentamino
 
                 //Вставка не прошла - зеркалим
                 figure.Rotate();
-
             }
-
             return false;
         }
 
 
-        //Пытаемся совместить остальные ячейки фигуры
-        private bool TryInsert(int y, int x, Figure figure)
+        //Пытаемся совместить ячейки фигуры в игровое поле
+        private bool CheckCanInsert(int y, int x, Figure figure)
         {
-            //Берем самую левую ячейку в фигуре
-            int iFig = figure.GetFirstCell();
+            //Значение отступа в первом столбце
+            int iIndent = figure.GetIndent();
 
             //Наложение массива фигуры на массив поля 
-            for (int i = y - iFig; i < figure.GetLength(0) + y - iFig; i++)
+            for (int i = y - iIndent; i < figure.GetLength(0) + y - iIndent; i++)
             {
                 for (int j = x; j < figure.GetLength(1) + x; j++)
                 {
-                    //Если работаем на проверку, то работают алгоритмы проверки
-
+                    //Проверка выхода за пределы поля
                     if (CheckMapBounds(i, j))
-                    {
                         return false;
-                    }
 
-                    //Если в эту ячейку не нужно записывать, а у фигуры есть ячейка
-                    if (gameBoard[i, j] == 0 && figure[i - y + iFig, j - x])
-                    {
+                    //Если в эту ячейку не нужно записывать, а у фигуры ячейка заполнена
+                    if ((gameBoard[i, j] == (int)CellStates.NONE || gameBoard[i, j] > 1) && figure[i - y + iIndent, j - x])
                         return false;
-                    }
 
-                    // > 1, значит ячейка закрашена, а у фигуры есть ячейка
-                    if (gameBoard[i, j] > 1 && figure[i - y + iFig, j - x])
-                    {
-                        return false;
-                    }
                 }
             }
 
@@ -167,10 +149,21 @@ namespace Pentamino
             return true;
         }
 
+        public bool CheckMapBounds(int i, int j)
+        {
+            if (i < 0 || i >= gameBoard.GetLength(0))
+                return true;
+
+            if (j < 0 || j >= gameBoard.GetLength(1))
+                return true;
+
+            return false;
+        }
+
         private void InsertByCord(int y, int x, Figure figure)
         {
             //Берем самую левую ячейку в фигуре
-            int jFig = figure.GetFirstCell();
+            int jFig = figure.GetIndent();
 
             //Проверка прошла => запись
             for (int i = y - jFig; i < figure.GetLength(0) + y - jFig; i++)
@@ -180,7 +173,7 @@ namespace Pentamino
                     if (figure[i - y + jFig, j - x])
                     {
                         //Count + 2 это псевдо-цвет
-                        gameBoard[i, j] = (int) figure.Symbol + 2;
+                        gameBoard[i, j] = (int)figure.Symbol + 2;
                     }
                 }
             }
@@ -188,25 +181,13 @@ namespace Pentamino
             //Запись буквы в строку-решение
             figure.SetCoordinates(x, y);
             //Добавление в список
-            listFigureOnBoard.Push(figure);
+            FiguresOnBoard.Push(figure);
+
+            //Добавление в строку 
+            AnswerString.Append(figureNumerator.GetCurrent().Symbol);
+            Console.WriteLine(AnswerString);
         }
 
-
-
-        public bool CheckMapBounds(int y, int x)
-        {
-            if (y < 0 || y >= gameBoard.GetLength(0))
-            {
-                return true;
-            }
-
-            if (x < 0 || x >= gameBoard.GetLength(1))
-            {
-                return true;
-            }
-
-            return false;
-        }
 
         //Поиск пустой ячейки
         public void FindEmptyCell(out int x, out int y)
@@ -216,7 +197,7 @@ namespace Pentamino
             {
                 for (int i = 0; i < gameBoard.GetLength(0); i++)
                 {
-                    if (gameBoard[i, j] == 1)
+                    if (gameBoard[i, j] == (int) CellStates.NONINSERT)
                     {
                         //Передаем по ссылке координаты пустой ячейки
                         x = i;
@@ -228,16 +209,15 @@ namespace Pentamino
 
             //Если свободных ячеек нет
             x = y = 0;
-            return;
         }
 
         //Удаление с поля последней фигуры
         private void RemoveLastFigure()
         {
-            Figure figureToDelete = listFigureOnBoard.Pop();
+            Figure figureToDelete = FiguresOnBoard.Pop();
 
             //Берем самую левую ячейку в фигуре
-            int jFig = figureToDelete.GetFirstCell();
+            int jFig = figureToDelete.GetIndent();
             int y = figureToDelete.y;
             int x = figureToDelete.x;
 
@@ -249,12 +229,13 @@ namespace Pentamino
                     if (figureToDelete[i - y + jFig, j - x])
                     {
                         //1 => ячейка пуста
-                        gameBoard[i, j] = 1;
+                        gameBoard[i, j] = (int) CellStates.NONINSERT;
                     }
                 }
             }
 
-
+            //Удаление символа из строки
+            AnswerString.Length--;
         }
 
         //Для доступа к ячейкам поля
@@ -273,7 +254,8 @@ namespace Pentamino
 
         private void ReadGameBoard(string path)
         {
-            FileReader fr = new FileReader();
+            FileWorker fr = new FileWorker();
+
             int jArray = 0;
             List<string> strList = new List<string>();
             //Считывание поля в список
@@ -298,11 +280,11 @@ namespace Pentamino
                     //Запись 0 если символ строки не пустой 
                     if (j < line.Length && line[j] == 'o')
                     {
-                        gameBoard[i, j] = 1;
+                        gameBoard[i, j] = (int) CellStates.NONINSERT;
                     }
                     else
                     {
-                        gameBoard[i, j] = 0;
+                        gameBoard[i, j] = (int)CellStates.NONE;
                     }
                 }
             }
@@ -317,11 +299,16 @@ namespace Pentamino
             {
                 for (int j = 0; j < gameBoard.GetLength(1); j++)
                 {
-                    if (gameBoard[i, j] != 0)
+                    if (gameBoard[i, j] != (int) CellStates.NONE && gameBoard[i, j] != (int)CellStates.NONINSERT)
                     {
-                        sb.Append($"{ (PentaminoSymbols)Convert.ToInt32((gameBoard[i, j]) - 2)} ");
-                    } else
-                    { 
+                        sb.Append($"{ (PentaminoSymbols)Convert.ToInt32((gameBoard[i, j]) - 2)} ");                      
+                    }
+                    else if (gameBoard[i, j] == (int)CellStates.NONE)
+                    {
+                        sb.Append("- ");
+                    }
+                    else if (gameBoard[i, j] == (int)CellStates.NONINSERT)
+                    {
                         sb.Append("0 ");
                     }
                 }
@@ -329,8 +316,7 @@ namespace Pentamino
             }
 
             //Обратное преобразование
-            string anw = sb.ToString();
-            return anw;
+            return sb.ToString();
         }
     }
 }

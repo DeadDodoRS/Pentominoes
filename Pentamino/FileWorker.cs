@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Pentamino
 {
-    class FileReader
+    class FileWorker
     {
         public List<string> ReadFile(ref int jArray, ref List<string> strList, string path)
         {
