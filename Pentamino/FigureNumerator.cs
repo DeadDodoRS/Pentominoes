@@ -11,10 +11,8 @@ namespace Pentamino
     class FigureNumerator
     {
         List<Figure> PentaminoList = new List<Figure>();
+        //Указатель на каком символе остановились
         public int numerator { get; private set; } = 0;
-
-        //На какое количество элементов передвигаем неподходящие фигуры назад в списке
-        public int dellayReplace { get; private set; } = 1;
 
         public FigureNumerator()
         {
@@ -30,32 +28,9 @@ namespace Pentamino
             return PentaminoList[numerator];
         }
 
-        public void SetCurrent(Figure value)
-        {
-            PentaminoList[numerator] = value;
-        }
-
-        public void RotateCurrent()
-        {
-            PentaminoList[numerator].Rotate();
-        }
-
         public void MoveNextDigit()
         {
             numerator++;
-        }
-
-        public Figure this[int i]
-        {
-            get
-            {
-                return PentaminoList[numerator];
-            }
-
-            private set
-            {
-                PentaminoList[i] = value;
-            }
         }
 
         public bool MoveNextThisDigit()
@@ -89,39 +64,12 @@ namespace Pentamino
             numerator--;
         }
 
-        public void MoveDellayReplace()
-        {
-            dellayReplace++;
-        }
-
-        public void ReturnDellayReplace()
-        {
-            dellayReplace = 1;
-        }
-
         public void ReplaceCurrentWithNext()
         {
             var temp = PentaminoList[numerator];
 
             PentaminoList[numerator] = PentaminoList[numerator + 1];
             PentaminoList[numerator + 1] = temp;
-        }
-
-        public void ReplaceCurrentWithNextTen()
-        {
-            for (int i = numerator; i < PentaminoList.Count - 1; i++)
-            {
-                if ((int)PentaminoList[i + 1].Symbol < (int)PentaminoList[i + 1].Symbol)
-                {
-                    var temp = PentaminoList[numerator];
-
-                    PentaminoList[numerator] = PentaminoList[numerator + dellayReplace];
-                    PentaminoList[numerator + dellayReplace] = temp;
-                    return;
-                }
-            }
-
-            ReplaceCurrentWithNext();
         }
 
         public void ReplaceCurrentWithLast()
@@ -136,6 +84,29 @@ namespace Pentamino
 
         }
 
+        //public void SetCurrent(Figure value)
+        //{
+        //    PentaminoList[numerator] = value;
+        //}
+
+        //public void RotateCurrent()
+        //{
+        //    PentaminoList[numerator].Rotate();
+        //}
+
+        //public Figure this[int i]
+        //{
+        //    get
+        //    {
+        //        return PentaminoList[numerator];
+        //    }
+
+        //    private set
+        //    {
+        //        PentaminoList[i] = value;
+        //    }
+        //}
+
 
         public override string ToString()
         {
@@ -147,18 +118,6 @@ namespace Pentamino
             }
 
             return anw.ToString();
-        }
-
-        public string OtherString()
-        {
-            string anw = string.Empty;
-
-            for (int i = numerator; i < PentaminoList.Count; i++)
-            {
-                anw += PentaminoList[i].Symbol;
-            }
-
-            return anw;
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Pentamino
             int maxLength = 0;
 
             //Построчное считывание и запись в лист
-            System.IO.StreamReader file = new System.IO.StreamReader(path);
+            StreamReader file = new StreamReader(path);
             while ((line = file.ReadLine()) != null)
             {
                 //Поиск самой длинной строки
@@ -27,6 +28,14 @@ namespace Pentamino
 
             jArray = maxLength;
             return strList;
+        }
+
+        public void WriteFile(string writePath, GameBoard gameboard)
+        {
+            using (StreamWriter sw = new StreamWriter(writePath, false, Encoding.Default))
+            {
+                sw.WriteLine(gameboard);
+            }
         }
     }
 }

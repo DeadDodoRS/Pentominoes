@@ -5,3 +5,10 @@ C:\Users\Reddoer\source\repos\Pentamino\Pentamino\obj\Debug\Pentamino.csprojReso
 C:\Users\Reddoer\source\repos\Pentamino\Pentamino\obj\Debug\Pentamino.csproj.CoreCompileInputs.cache
 C:\Users\Reddoer\source\repos\Pentamino\Pentamino\obj\Debug\Pentamino.exe
 C:\Users\Reddoer\source\repos\Pentamino\Pentamino\obj\Debug\Pentamino.pdb
+C:\Users\Reddoer\Documents\GitHub\Penta\Pentominoes\Pentamino\bin\Debug\Pentamino.exe.config
+C:\Users\Reddoer\Documents\GitHub\Penta\Pentominoes\Pentamino\bin\Debug\Pentamino.exe
+C:\Users\Reddoer\Documents\GitHub\Penta\Pentominoes\Pentamino\bin\Debug\Pentamino.pdb
+C:\Users\Reddoer\Documents\GitHub\Penta\Pentominoes\Pentamino\obj\Debug\Pentamino.csprojResolveAssemblyReference.cache
+C:\Users\Reddoer\Documents\GitHub\Penta\Pentominoes\Pentamino\obj\Debug\Pentamino.csproj.CoreCompileInputs.cache
+C:\Users\Reddoer\Documents\GitHub\Penta\Pentominoes\Pentamino\obj\Debug\Pentamino.exe
+C:\Users\Reddoer\Documents\GitHub\Penta\Pentominoes\Pentamino\obj\Debug\Pentamino.pdb

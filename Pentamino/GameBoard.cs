@@ -32,8 +32,8 @@ namespace Pentamino
         public void Insert(Figure figure)
         {
             int i, j;
+            //Поиск координат для вставки
             FindEmptyCell(out i, out j);
-            //Console.WriteLine($"Вставка в {i} , {j}");
 
             TryInsertRandomRotate(figure, i, j);
         }
@@ -50,7 +50,7 @@ namespace Pentamino
                 TryInsertRandomFigure(i, j);
             }
 
-
+            Console.WriteLine();
             Console.WriteLine("Готово");
 
         }
@@ -180,7 +180,7 @@ namespace Pentamino
                     if (figure[i - y + jFig, j - x])
                     {
                         //Count + 2 это псевдо-цвет
-                        gameBoard[i, j] = listFigureOnBoard.Count + 2;
+                        gameBoard[i, j] = (int) figure.Symbol + 2;
                     }
                 }
             }
@@ -317,7 +317,13 @@ namespace Pentamino
             {
                 for (int j = 0; j < gameBoard.GetLength(1); j++)
                 {
-                    sb.Append($"{ Convert.ToInt32(gameBoard[i, j])} ");
+                    if (gameBoard[i, j] != 0)
+                    {
+                        sb.Append($"{ (PentaminoSymbols)Convert.ToInt32((gameBoard[i, j]) - 2)} ");
+                    } else
+                    { 
+                        sb.Append("0 ");
+                    }
                 }
                 sb.Append(Environment.NewLine);
             }

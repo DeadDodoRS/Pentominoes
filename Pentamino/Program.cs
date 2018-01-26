@@ -10,12 +10,23 @@ namespace Pentamino
     {
         static void Main(string[] args)
         {
-            //Console.WriteLine("Введите Y поля");
-            //int yLen = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Введите имя файла для загрузки игрового поля :");
+            string pathFrom = Console.ReadLine();
+            Console.WriteLine("Введите имя файла для сохранения результата :");
+            string pathTo = Console.ReadLine();
 
-            GameBoard gm = new GameBoard("C://Junior//10.in");
+            FileReader fr = new FileReader();
+            GameBoard gm = new GameBoard(pathFrom);
+
 
             gm.CompliteBoard();
+            fr.WriteFile(pathTo, gm);
+
+            Console.WriteLine("Запись в файл завершена");
+
+            Console.WriteLine("Игровое поле: ");
+            Console.WriteLine(gm.ToString());
+
             Console.ReadKey();
 
 
