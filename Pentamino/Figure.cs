@@ -12,6 +12,12 @@ namespace Pentamino
         public bool[,] SymbolArray { get; private set; }
         public PentaminoSymbols Symbol { get; private set; }
 
+        //Храним количество совершенных оборотов
+        public int RotateCount { get; private set; } = 0;
+
+        //Количество поворотов, совершив которые фигура вернется в исходное положение
+        public int RotateToFullTurn { get; private set; }
+
         //Координаты на поле
         public int x { get; private set; }
         public int y { get; private set; }
@@ -21,6 +27,48 @@ namespace Pentamino
             Symbol = symbol;
             //Задаем массив
             SymbolArray = PentaminoFigurePattern.GetArrayBySymbol(symbol);
+
+            SetRotateToFullTurn();
+        }
+
+        //Изменение поворота или ориентации фигуры в зависимости от уже произведенных манипуляций над фигурой
+        public void SetAnotherLocation()
+        {
+            Rotate();
+
+            //Для Z зекралить фигуру чаще
+            if (Symbol == PentaminoSymbols.T && RotateCount == RotateToFullTurn / 4)
+                Mirror();
+
+            if (RotateCount == RotateToFullTurn / 2 || RotateCount == RotateToFullTurn)
+                Mirror();
+
+        }
+
+
+        //Сколько поворотов нужно каждой фигуре для полного поворота
+        private void SetRotateToFullTurn()
+        {
+            if (Symbol == PentaminoSymbols.T || Symbol == PentaminoSymbols.V || Symbol == PentaminoSymbols.U 
+                || Symbol == PentaminoSymbols.W || Symbol == PentaminoSymbols.Z)
+            {
+                RotateToFullTurn = 4;
+                return;
+            }
+
+            if (Symbol == PentaminoSymbols.I)
+            {
+                RotateToFullTurn = 2;
+                return;
+            }
+
+            if (Symbol == PentaminoSymbols.X)
+            {
+                RotateToFullTurn = 1;
+                return;
+            }
+
+            RotateToFullTurn = 8;
         }
 
         //При установке на поле
@@ -33,8 +81,10 @@ namespace Pentamino
         //Поворот происходит против часовой стрелке
         public void Rotate()
         {
-            //Если символ - Х, то при повороте он не изменится
-            if (Symbol == PentaminoSymbols.X)
+            RotateCount += 1;
+
+            //Вводим исключения для неповоротных фигур
+            if (!CanRotate())
                 return;
 
             //Создаем новый массив, в котором размерность X = Y и Y = X
@@ -53,12 +103,20 @@ namespace Pentamino
             SymbolArray = newArray;
         }
 
+        public bool CanRotate()
+        {
+            //Если символ - Х, то при повороте он не изменится
+            if (Symbol == PentaminoSymbols.X)
+                return false;
+
+            return true;
+        }
+
         //Отзеркалить фигуру
         public void Mirror()
         {
             //Вводим исключения для незекральных фигур
-            if (Symbol == PentaminoSymbols.X || Symbol == PentaminoSymbols.I || Symbol == PentaminoSymbols.T ||
-                Symbol == PentaminoSymbols.V || Symbol == PentaminoSymbols.U || Symbol == PentaminoSymbols.W)
+            if (!CanMirror())
                 return;
 
             for (int j = 0; j < SymbolArray.GetLength(1) / 2; j++)
@@ -70,6 +128,21 @@ namespace Pentamino
                     SymbolArray[i, SymbolArray.GetLength(1) - 1 - j] = temp;
                 }
             }
+        }
+
+        public bool CanMirror()
+        {
+            if (Symbol == PentaminoSymbols.X || Symbol == PentaminoSymbols.I || Symbol == PentaminoSymbols.T ||
+                Symbol == PentaminoSymbols.V || Symbol == PentaminoSymbols.U || Symbol == PentaminoSymbols.W)
+                return false;
+
+            return true;
+        }
+
+        //Фигура сделала полный оборот
+        public void FigureInBasePosition()
+        {
+            RotateCount = 0;
         }
 
         //Координаты непустой ячейки в первом столбце

@@ -30,6 +30,11 @@ namespace Pentamino
             return AllFigureSequence[Numerator];
         }
 
+        public void ReinsertPrevious(Figure newfigure)
+        {
+            AllFigureSequence[Numerator - 1] = newfigure;
+        }
+
         //Переход на разряд ниже (в сторону последнего)
         public void MoveNextDigit()
         {

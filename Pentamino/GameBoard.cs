@@ -12,7 +12,7 @@ namespace Pentamino
         public StringBuilder AnswerString = new StringBuilder();
 
         private int[,] gameBoard;
-        private const int CountRotate = 4;
+        //private const int CountRotate = 4;
 
         FigureNumerator figureNumerator = new FigureNumerator();
 
@@ -53,7 +53,6 @@ namespace Pentamino
             if (CheckCanInsertAllRotate(figureNumerator.GetCurrent(), i, j))
             {
                 //Запись
-                InsertByCord(i, j, figureNumerator.GetCurrent());
                 figureNumerator.MoveNextDigit();
             }
             else
@@ -64,51 +63,55 @@ namespace Pentamino
                     //Если перейти к следующему не получится (тк закончились), 
                     //переходим к предыдущему символу, удаляем, подставляем новую фигуру 
 
-                    if (false)
+                    //Сначала пытаемся подставить эту же фигуру, но другой стороной
+                    if (TryInsertPreviousFigureAnotherSide())
                     {
-                        //Код для попытки поворота уже вставленной фигуры
-                        Figure figure = FiguresOnBoard.Peek();
-                        figure.Rotate();
-
-                        RemoveLastFigure();
-
-                        if (CheckCanInsertAllRotate(figure, i, j)){
-                            //TODO
-                        }
-
+                        return;
                     }
 
-
+                    //Если не удалось вставить текущую фигуру другой стороной - 
+                    //возвращаемся к предыдущему символу
                     figureNumerator.MovePreviousDigit();
-                    RemoveLastFigure();
-
-                    Console.WriteLine("Удаление");
                 }
             }
+
+            //Console.WriteLine(this);
         }
 
-        //Пытаемся вставить текущую фигуру другой стороной
-        public void ReinsertCurrentFigure()
+        public bool TryInsertPreviousFigureAnotherSide()
         {
             Figure figure = FiguresOnBoard.Peek();
             RemoveLastFigure();
-            figure.Rotate();
 
-            Insert(figure);
+            figure.Rotate();
+            FindEmptyCell(out int y, out int x);
+
+            //Если у фигуры есть другое возможное размещение
+            if (CheckCanInsertAllRotate(figure, y, x))
+            {
+                //Проходим этот разряд ещё раз
+                figureNumerator.ReplaceCurrentWithLast();
+                return true;
+            }
+
+            return false;
         }
 
 
         //Проверка всех комбинаций фигуры с поворотами и отзеркаливанием
         public bool CheckCanInsertAllRotate(Figure figure, int i, int j)
         {
-            for (int n = 0; n < CountRotate * 2; n++)
+
+            for (int k = 0; k < figure.RotateToFullTurn; k++)
             {
-                //Как пройдет половина поворотов - зеркалим и проходим цикл ещё раз
-                if (n == CountRotate)
+
+                //Если фигура сделала полный оборот и вернулась в базовое положение
+                if (figure.RotateCount == figure.RotateToFullTurn)
                 {
-                    //Вставка не прошла - делаем поворот
-                    figure.Mirror();
+                    figure.FigureInBasePosition();
+                    return false;
                 }
+
 
                 if (CheckCanInsert(i, j, figure))
                 {
@@ -116,9 +119,13 @@ namespace Pentamino
                     return true;
                 }
 
-                //Вставка не прошла - зеркалим
-                figure.Rotate();
+                //На последнем проходе цикла этот метод вернет уже базовое расположение фигуры
+                figure.SetAnotherLocation();
             }
+
+            //Если фигура прошла весь цикл => она вернулась в исходную позицию
+            figure.FigureInBasePosition();
+
             return false;
         }
 
@@ -144,6 +151,9 @@ namespace Pentamino
 
                 }
             }
+
+            //Проверка прошла успешно => вставка
+            InsertByCord(y, x, figure);
 
             //Фигура вписывается в поле
             return true;
@@ -184,7 +194,7 @@ namespace Pentamino
             FiguresOnBoard.Push(figure);
 
             //Добавление в строку 
-            AnswerString.Append(figureNumerator.GetCurrent().Symbol);
+            AnswerString.Append(figure.Symbol);
             Console.WriteLine(AnswerString);
         }
 
