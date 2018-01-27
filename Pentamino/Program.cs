@@ -16,22 +16,24 @@ namespace Pentamino
             //string pathTo = Console.ReadLine();
 
 
-
             GameBoard gm = new GameBoard("C:/Junior/9.in");
-
-            //gm.Insert(new Figure(PentaminoSymbols.F));
-            //gm.Insert(new Figure(PentaminoSymbols.I));
-            //gm.Insert(new Figure(PentaminoSymbols.I));
-            //gm.Insert(new Figure(PentaminoSymbols.T));
 
             //while (true)
             //{
             //    Console.WriteLine("Игровое поле: ");
             //    Console.WriteLine(gm.ToString());
 
-            //    if (Console.ReadLine() == "k")
+            //    string str = Console.ReadLine();
+
+            //    if (str == "d")
             //    {
-            //        gm.ReinsertCurrentFigure();                    
+            //        gm.RemoveLastFigure();
+            //        continue;
+            //    }
+
+            //    if (str != null)
+            //    {
+            //        gm.Insert(new Figure(PentaminoFigurePattern.CharToPentaminoSymbol(Convert.ToChar(str))));
             //    }
 
             //    Console.ReadKey();

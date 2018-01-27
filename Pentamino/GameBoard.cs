@@ -35,6 +35,7 @@ namespace Pentamino
         public void CompliteBoard()
         {
             //Пока строка-ответ не будет содержать все символы
+
             while (AnswerString.Length < figureNumerator.Count)
             {
                 //Находим координаты поля
@@ -49,6 +50,13 @@ namespace Pentamino
 
         public void TryInsertRandomFigure(int i, int j)
         {
+            //Console.WriteLine($"Вставка в : {i} {j}");
+
+            if (AnswerString.ToString() == "FU" && figureNumerator.GetCurrent().Symbol == PentaminoSymbols.P)
+            {
+                Console.WriteLine(this);
+            }
+
             //Если текущий символ подходит, то устанавливаем на поле и записываем
             if (CheckCanInsertAllRotate(figureNumerator.GetCurrent(), i, j))
             {
@@ -75,16 +83,21 @@ namespace Pentamino
                 }
             }
 
-            //Console.WriteLine(this);
+            Console.WriteLine(this);
         }
 
         public bool TryInsertPreviousFigureAnotherSide()
         {
             Figure figure = FiguresOnBoard.Peek();
             RemoveLastFigure();
+            Console.WriteLine(this);
 
-            figure.Rotate();
-            FindEmptyCell(out int y, out int x);
+            figure.SetAnotherLocation();
+
+            int y = figure.y;
+            int x = figure.x;
+
+            FindEmptyCell(out y, out x);
 
             //Если у фигуры есть другое возможное размещение
             if (CheckCanInsertAllRotate(figure, y, x))
@@ -129,24 +142,23 @@ namespace Pentamino
             return false;
         }
 
-
         //Пытаемся совместить ячейки фигуры в игровое поле
         private bool CheckCanInsert(int y, int x, Figure figure)
         {
             //Значение отступа в первом столбце
-            int iIndent = figure.GetIndent();
+            int jIndent = figure.GetIndent();
 
             //Наложение массива фигуры на массив поля 
-            for (int i = y - iIndent; i < figure.GetLength(0) + y - iIndent; i++)
+            for (int i = y; i < figure.GetLength(0) + y; i++)
             {
-                for (int j = x; j < figure.GetLength(1) + x; j++)
+                for (int j = x - jIndent; j < figure.GetLength(1) + x - jIndent; j++)
                 {
                     //Проверка выхода за пределы поля
                     if (CheckMapBounds(i, j))
                         return false;
 
                     //Если в эту ячейку не нужно записывать, а у фигуры ячейка заполнена
-                    if ((gameBoard[i, j] == (int)CellStates.NONE || gameBoard[i, j] > 1) && figure[i - y + iIndent, j - x])
+                    if ((gameBoard[i, j] == (int)CellStates.NONE || gameBoard[i, j] > 1) && figure[i - y, j - x + jIndent])
                         return false;
 
                 }
@@ -173,14 +185,14 @@ namespace Pentamino
         private void InsertByCord(int y, int x, Figure figure)
         {
             //Берем самую левую ячейку в фигуре
-            int jFig = figure.GetIndent();
+            int jIndent = figure.GetIndent();
 
             //Проверка прошла => запись
-            for (int i = y - jFig; i < figure.GetLength(0) + y - jFig; i++)
+            for (int i = y; i < figure.GetLength(0) + y; i++)
             {
-                for (int j = x; j < figure.GetLength(1) + x; j++)
+                for (int j = x - jIndent; j < figure.GetLength(1) + x - jIndent; j++)
                 {
-                    if (figure[i - y + jFig, j - x])
+                    if (figure[i - y, j - x + jIndent])
                     {
                         //Count + 2 это псевдо-цвет
                         gameBoard[i, j] = (int)figure.Symbol + 2;
@@ -196,18 +208,18 @@ namespace Pentamino
             //Добавление в строку 
             AnswerString.Append(figure.Symbol);
             Console.WriteLine(AnswerString);
+            Console.WriteLine(figureNumerator.ToString());
         }
-
 
         //Поиск пустой ячейки
         public void FindEmptyCell(out int x, out int y)
         {
             //заполняем поле слева направо по столбцам
-            for (int j = 0; j < gameBoard.GetLength(1); j++)
+            for (int i = 0; i < gameBoard.GetLength(0); i++)
             {
-                for (int i = 0; i < gameBoard.GetLength(0); i++)
+                for (int j = 0; j < gameBoard.GetLength(1); j++)
                 {
-                    if (gameBoard[i, j] == (int) CellStates.NONINSERT)
+                    if (gameBoard[i, j] == (int)CellStates.NONINSERT)
                     {
                         //Передаем по ссылке координаты пустой ячейки
                         x = i;
@@ -222,7 +234,7 @@ namespace Pentamino
         }
 
         //Удаление с поля последней фигуры
-        private void RemoveLastFigure()
+        public void RemoveLastFigure()
         {
             Figure figureToDelete = FiguresOnBoard.Pop();
 
@@ -232,14 +244,14 @@ namespace Pentamino
             int x = figureToDelete.x;
 
             //Проверка прошла => запись
-            for (int i = y - jFig; i < figureToDelete.GetLength(0) + y - jFig; i++)
+            for (int i = y; i < figureToDelete.GetLength(0) + y; i++)
             {
-                for (int j = x; j < figureToDelete.GetLength(1) + x; j++)
+                for (int j = x - jFig; j < figureToDelete.GetLength(1) + x - jFig; j++)
                 {
-                    if (figureToDelete[i - y + jFig, j - x])
+                    if (figureToDelete[i - y, j - x + jFig])
                     {
                         //1 => ячейка пуста
-                        gameBoard[i, j] = (int) CellStates.NONINSERT;
+                        gameBoard[i, j] = (int)CellStates.NONINSERT;
                     }
                 }
             }

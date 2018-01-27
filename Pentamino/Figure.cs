@@ -79,7 +79,7 @@ namespace Pentamino
         }
 
         //Поворот происходит против часовой стрелке
-        public void Rotate()
+        private void Rotate()
         {
             RotateCount += 1;
 
@@ -103,7 +103,7 @@ namespace Pentamino
             SymbolArray = newArray;
         }
 
-        public bool CanRotate()
+        private bool CanRotate()
         {
             //Если символ - Х, то при повороте он не изменится
             if (Symbol == PentaminoSymbols.X)
@@ -113,7 +113,7 @@ namespace Pentamino
         }
 
         //Отзеркалить фигуру
-        public void Mirror()
+        private void Mirror()
         {
             //Вводим исключения для незекральных фигур
             if (!CanMirror())
@@ -130,7 +130,7 @@ namespace Pentamino
             }
         }
 
-        public bool CanMirror()
+        private bool CanMirror()
         {
             if (Symbol == PentaminoSymbols.X || Symbol == PentaminoSymbols.I || Symbol == PentaminoSymbols.T ||
                 Symbol == PentaminoSymbols.V || Symbol == PentaminoSymbols.U || Symbol == PentaminoSymbols.W)
@@ -150,11 +150,11 @@ namespace Pentamino
         public int GetIndent()
         {
             //Тк в первая столбец не может быть пустым => цикл один
-            for (int i = 0; i < SymbolArray.GetLength(0); i++)
+            for (int j = 0; j < SymbolArray.GetLength(1); j++)
             {
-                if (SymbolArray[i, 0])
+                if (SymbolArray[0, j])
                 {
-                    return i;
+                    return j;
                 }
             }
 

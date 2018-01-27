@@ -197,5 +197,26 @@ namespace Pentamino
 
             return arr;
         }
+
+        public static PentaminoSymbols CharToPentaminoSymbol(char symbol)
+        {
+            switch (symbol)
+            {
+                case ('F'): return PentaminoSymbols.F;
+                case ('I'): return PentaminoSymbols.I;
+                case ('L'): return PentaminoSymbols.L;
+                case ('N'): return PentaminoSymbols.N;
+                case ('P'): return PentaminoSymbols.P;
+                case ('T'): return PentaminoSymbols.T;
+                case ('U'): return PentaminoSymbols.U;
+                case ('V'): return PentaminoSymbols.V;
+                case ('W'): return PentaminoSymbols.W;
+                case ('X'): return PentaminoSymbols.X;
+                case ('Y'): return PentaminoSymbols.Y;
+                case ('Z'): return PentaminoSymbols.Z;
+            }
+
+            return 0;
+        }
     }
 }
