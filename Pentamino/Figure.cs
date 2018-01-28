@@ -150,11 +150,11 @@ namespace Pentamino
         public int GetIndent()
         {
             //Тк в первая столбец не может быть пустым => цикл один
-            for (int j = 0; j < SymbolArray.GetLength(1); j++)
+            for (int i = 0; i < SymbolArray.GetLength(0); i++)
             {
-                if (SymbolArray[0, j])
+                if (SymbolArray[i, 0])
                 {
-                    return j;
+                    return i;
                 }
             }
 

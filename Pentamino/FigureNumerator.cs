@@ -42,7 +42,7 @@ namespace Pentamino
         }
 
         //Переход на разряд выше (в сторону первого символа)
-        public void MoveBackDigit()
+        private void MoveBackDigit()
         {
             Numerator--;
         }

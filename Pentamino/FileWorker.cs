@@ -11,6 +11,10 @@ namespace Pentamino
     {
         public List<string> ReadFile(ref int jArray, ref List<string> strList, string path)
         {
+            if (!File.Exists(path))
+                return null;
+
+
             string line;
             //Поиск самой длинной строки(j-переменная of array)
             int maxLength = 0;
@@ -25,6 +29,7 @@ namespace Pentamino
             }
 
             file.Close();
+            Console.WriteLine("Чтение прошло успешно");
 
             jArray = maxLength;
             return strList;
@@ -36,6 +41,8 @@ namespace Pentamino
             {
                 sw.WriteLine(gameboard);
             }
+
+            Console.WriteLine("Запись в файл завершена");
         }
     }
 }
